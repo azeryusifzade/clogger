@@ -3,6 +3,69 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <linux/input.h>
+#include <errno.h>
+
+/*
+ * Keys and buttons taken from <linux/input-event-codes.h>
+ * See https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h for details
+ */
+
+static const char *key_names[KEY_MAX + 1] = 
+{
+    [KEY_A] = "A", [KEY_B] = "B", [KEY_C] = "C", [KEY_D] = "D",
+    [KEY_E] = "E", [KEY_F] = "F", [KEY_G] = "G", [KEY_H] = "H",
+    [KEY_I] = "I", [KEY_J] = "J", [KEY_K] = "K", [KEY_L] = "L",
+    [KEY_M] = "M", [KEY_N] = "N", [KEY_O] = "O", [KEY_P] = "P",
+    [KEY_Q] = "Q", [KEY_R] = "R", [KEY_S] = "S", [KEY_T] = "T",
+    [KEY_U] = "U", [KEY_V] = "V", [KEY_W] = "W", [KEY_X] = "X",
+    [KEY_Y] = "Y", [KEY_Z] = "Z",
+
+    [KEY_0] = "0", [KEY_1] = "1", [KEY_2] = "2", [KEY_3] = "3",
+    [KEY_4] = "4", [KEY_5] = "5", [KEY_6] = "6", [KEY_7] = "7",
+    [KEY_8] = "8", [KEY_9] = "9",
+    /*
+    * Numpad = KP
+    */
+    [KEY_KP0] = "NUMPAD 0", [KEY_KP1] = "NUMPAD 1", [KEY_KP2] = "NUMPAD 2",
+    [KEY_KP3] = "NUMPAD 3", [KEY_KP4] = "NUMPAD 4", [KEY_KP5] = "NUMPAD 5",
+    [KEY_KP6] = "NUMPAD 6", [KEY_KP7] = "NUMPAD 7", [KEY_KP8] = "NUMPAD 8",
+    [KEY_KP9] = "NUMPAD 9",
+    [KEY_KPDOT] = "NUMPAD .", [KEY_KPENTER] = "NUMPAD ENTER",
+    [KEY_KPPLUS] = "NUMPAD +", [KEY_KPMINUS] = "NUMPAD -",
+    [KEY_KPASTERISK] = "NUMPAD *", [KEY_KPSLASH] = "NUMPAD /",
+
+    [KEY_MINUS] = "-", [KEY_EQUAL] = "=",
+    [KEY_LEFTBRACE] = "[", [KEY_RIGHTBRACE] = "]",
+    [KEY_SEMICOLON] = ";", [KEY_APOSTROPHE] = "'",
+    [KEY_GRAVE] = "`", [KEY_BACKSLASH] = "\\",
+    [KEY_COMMA] = ",", [KEY_DOT] = ".", [KEY_SLASH] = "/",
+
+    [KEY_SPACE] = "SPACE", [KEY_ENTER] = "ENTER", [KEY_ESC] = "ESC",
+    [KEY_BACKSPACE] = "BACKSPACE", [KEY_TAB] = "TAB",
+    [KEY_LEFTSHIFT] = "LEFT SHIFT", [KEY_RIGHTSHIFT] = "RIGHT SHIFT",
+    [KEY_LEFTCTRL] = "LEFT CTRL", [KEY_RIGHTCTRL] = "RIGHT CTRL",
+    [KEY_LEFTALT] = "LEFT ALT", [KEY_RIGHTALT] = "RIGHT ALT",
+    [KEY_CAPSLOCK] = "CAPS LOCK",
+
+    [KEY_INSERT] = "INSERT", [KEY_DELETE] = "DELETE",
+    [KEY_HOME] = "HOME", [KEY_END] = "END",
+    [KEY_PAGEUP] = "PAGE UP", [KEY_PAGEDOWN] = "PAGE DOWN",
+
+    [KEY_UP] = "ARROW UP", [KEY_DOWN] = "ARROW DOWN",
+    [KEY_LEFT] = "ARROW LEFT", [KEY_RIGHT] = "ARROW RIGHT",
+
+    [KEY_F1] = "F1", [KEY_F2] = "F2", [KEY_F3] = "F3", [KEY_F4] = "F4",
+    [KEY_F5] = "F5", [KEY_F6] = "F6", [KEY_F7] = "F7", [KEY_F8] = "F8",
+    [KEY_F9] = "F9", [KEY_F10] = "F10", [KEY_F11] = "F11", [KEY_F12] = "F12",
+    /*
+    * Extra meta
+    */
+    [KEY_LEFTMETA] = "LEFT META", [KEY_RIGHTMETA] = "RIGHT META",
+
+    [BTN_LEFT] = "MOUSE LEFT BUTTON",
+    [BTN_RIGHT] = "MOUSE RIGHT BUTTON",
+    [BTN_MIDDLE] = "MOUSE MIDDLE BUTTON",
+};
 
 int main(int argc, char *argv[])
 {
@@ -32,6 +95,8 @@ int main(int argc, char *argv[])
          */
         if (bytesRead == -1)
         {
+            if (errno == EINTR) continue;
+
             perror("read");
             break;
         }
@@ -45,84 +110,10 @@ int main(int argc, char *argv[])
         if (iEvent.type == EV_KEY && iEvent.value == 1)
         {
         /*
-         * Keys and buttons taken from <linux/input-event-codes.h>
+         * Getting input event from key_names
          */
-            if (iEvent.code == KEY_A) printf("A\n");
-            else if (iEvent.code == KEY_B) printf("B\n");
-            else if (iEvent.code == KEY_C) printf("C\n");
-            else if (iEvent.code == KEY_D) printf("D\n");
-            else if (iEvent.code == KEY_E) printf("E\n");
-            else if (iEvent.code == KEY_F) printf("F\n");
-            else if (iEvent.code == KEY_G) printf("G\n");
-            else if (iEvent.code == KEY_H) printf("H\n");
-            else if (iEvent.code == KEY_I) printf("I\n");
-            else if (iEvent.code == KEY_J) printf("J\n");
-            else if (iEvent.code == KEY_K) printf("K\n");
-            else if (iEvent.code == KEY_L) printf("L\n");
-            else if (iEvent.code == KEY_M) printf("M\n");
-            else if (iEvent.code == KEY_N) printf("N\n");
-            else if (iEvent.code == KEY_O) printf("O\n");
-            else if (iEvent.code == KEY_P) printf("P\n");
-            else if (iEvent.code == KEY_Q) printf("Q\n");
-            else if (iEvent.code == KEY_R) printf("R\n");
-            else if (iEvent.code == KEY_S) printf("S\n");
-            else if (iEvent.code == KEY_T) printf("T\n");
-            else if (iEvent.code == KEY_U) printf("U\n");
-            else if (iEvent.code == KEY_V) printf("V\n");
-            else if (iEvent.code == KEY_W) printf("W\n");
-            else if (iEvent.code == KEY_X) printf("X\n");
-            else if (iEvent.code == KEY_Y) printf("Y\n");
-            else if (iEvent.code == KEY_Z) printf("Z\n");
-
-            else if (iEvent.code == KEY_0) printf("0\n");
-            else if (iEvent.code == KEY_1) printf("1\n");
-            else if (iEvent.code == KEY_2) printf("2\n");
-            else if (iEvent.code == KEY_3) printf("3\n");
-            else if (iEvent.code == KEY_4) printf("4\n");
-            else if (iEvent.code == KEY_5) printf("5\n");
-            else if (iEvent.code == KEY_6) printf("6\n");
-            else if (iEvent.code == KEY_7) printf("7\n");
-            else if (iEvent.code == KEY_8) printf("8\n");
-            else if (iEvent.code == KEY_9) printf("9\n");
-
-            else if (iEvent.code == KEY_SPACE) printf("SPACE\n");
-            else if (iEvent.code == KEY_ENTER) printf("ENTER\n");
-            else if (iEvent.code == KEY_ESC) printf("ESC\n");
-            else if (iEvent.code == KEY_BACKSPACE) printf("BACKSPACE\n");
-            else if (iEvent.code == KEY_TAB) printf("TAB\n");
-            else if (iEvent.code == KEY_LEFTSHIFT) printf("LEFT SHIFT\n");
-            else if (iEvent.code == KEY_RIGHTSHIFT) printf("RIGHT SHIFT\n");
-            else if (iEvent.code == KEY_LEFTCTRL) printf("LEFT CTRL\n");
-            else if (iEvent.code == KEY_RIGHTCTRL) printf("RIGHT CTRL\n");
-            else if (iEvent.code == KEY_LEFTALT) printf("LEFT ALT\n");
-            else if (iEvent.code == KEY_RIGHTALT) printf("RIGHT ALT\n");
-            else if (iEvent.code == KEY_CAPSLOCK) printf("CAPS LOCK\n");
-
-            else if (iEvent.code == KEY_UP) printf("ARROW UP\n");
-            else if (iEvent.code == KEY_DOWN) printf("ARROW DOWN\n");
-            else if (iEvent.code == KEY_LEFT) printf("ARROW LEFT\n");
-            else if (iEvent.code == KEY_RIGHT) printf("ARROW RIGHT\n");
-
-            else if (iEvent.code == KEY_F1) printf("F1\n");
-            else if (iEvent.code == KEY_F2) printf("F2\n");
-            else if (iEvent.code == KEY_F3) printf("F3\n");
-            else if (iEvent.code == KEY_F4) printf("F4\n");
-            else if (iEvent.code == KEY_F5) printf("F5\n");
-            else if (iEvent.code == KEY_F6) printf("F6\n");
-            else if (iEvent.code == KEY_F7) printf("F7\n");
-            else if (iEvent.code == KEY_F8) printf("F8\n");
-            else if (iEvent.code == KEY_F9) printf("F9\n");
-            else if (iEvent.code == KEY_F10) printf("F10\n");
-            else if (iEvent.code == KEY_F11) printf("F11\n");
-            else if (iEvent.code == KEY_F12) printf("F12\n");
-
-        /*
-         * For mouse buttons try the different event file
-         */
-            else if (iEvent.code == BTN_LEFT) printf("MOUSE LEFT BUTTON\n");
-            else if (iEvent.code == BTN_RIGHT) printf("MOUSE RIGHT BUTTON\n");
-            else if (iEvent.code == BTN_MIDDLE) printf("MOUSE MIDDLE BUTTON\n");
-
+            
+            if (iEvent.code <= KEY_MAX && key_names[iEvent.code]) printf("Key >>> %s\n", key_names[iEvent.code]);
             else printf("UNKNOWN KEY CODE: %u\n", iEvent.code);
 
         }
