@@ -87,6 +87,9 @@ int main(int argc, char *argv[])
 
     struct input_event iEvent;
 
+    int shiftHeld = 0;
+    int capsOn = 0;
+
     while (1)
     {
         ssize_t bytesRead = read(fDescr, &iEvent, sizeof(iEvent));
@@ -106,14 +109,27 @@ int main(int argc, char *argv[])
             printf("Incomplete input event\n");
             break;
         }
+        /*
+         * Shift 1=pressed, 2=repeat, 0=released
+         * Caps is toggled
+         */
+        if (iEvent.code == KEY_LEFTSHIFT || iEvent.code == KEY_RIGHTSHIFT) shiftHeld = (iEvent.value != 0);
+        if (iEvent.code == KEY_CAPSLOCK && iEvent.value == 1) capsOn = !capsOn;
 
         if (iEvent.type == EV_KEY && iEvent.value == 1)
         {
         /*
-         * Getting input event from key_names
+         * Input event from key_names
          */
             
-            if (iEvent.code <= KEY_MAX && key_names[iEvent.code]) printf("Key >>> %s\n", key_names[iEvent.code]);
+            if (iEvent.code <= KEY_MAX && key_names[iEvent.code]) 
+            {
+                if (shiftHeld && capsOn) printf("Key >>> (Shift + Caps + %s)\n", key_names[iEvent.code]);
+                else if (shiftHeld) printf("Key >>> (Shift + %s)\n", key_names[iEvent.code]);
+                else if (capsOn) printf("Key >>> (Caps + %s)\n", key_names[iEvent.code]);
+                
+                else printf("Key >>> %s\n", key_names[iEvent.code]);
+            }
             else printf("UNKNOWN KEY CODE: %u\n", iEvent.code);
 
         }
