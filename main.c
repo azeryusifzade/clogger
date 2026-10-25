@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <linux/input.h>
 #include <errno.h>
+#include <time.h>
 
 /*
  * Keys and buttons taken from <linux/input-event-codes.h>
@@ -67,6 +68,15 @@ static const char *key_names[KEY_MAX + 1] =
     [BTN_MIDDLE] = "MOUSE MIDDLE BUTTON",
 };
 
+void print_timestamp(void)
+{
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    char buf[9];
+    strftime(buf, sizeof(buf), "%H:%M:%S", t);
+    printf("[%s] ", buf);
+}
+
 int main(int argc, char *argv[])
 {
     if (argc != 2)
@@ -124,14 +134,19 @@ int main(int argc, char *argv[])
             
             if (iEvent.code <= KEY_MAX && key_names[iEvent.code]) 
             {
+                print_timestamp();
                 if (shiftHeld && capsOn) printf("Key >>> (Shift + Caps + %s)\n", key_names[iEvent.code]);
                 else if (shiftHeld) printf("Key >>> (Shift + %s)\n", key_names[iEvent.code]);
                 else if (capsOn) printf("Key >>> (Caps + %s)\n", key_names[iEvent.code]);
                 
                 else printf("Key >>> %s\n", key_names[iEvent.code]);
             }
-            else printf("UNKNOWN KEY CODE: %u\n", iEvent.code);
-
+            
+            else
+            {
+                print_timestamp();
+                printf("UNKNOWN KEY CODE: %u\n", iEvent.code);
+            }      
         }
     }
 
