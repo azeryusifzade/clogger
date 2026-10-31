@@ -118,8 +118,8 @@ int main(int argc, char *argv[])
 
     struct input_event iEvent;
 
-    int shiftHeld = 0;
-    int capsOn = 0;
+    _Bool shiftHeld = 0;
+    _Bool capsOn = 0;
 
     while (1)
     {
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
          * Input event from key_names
          */
             
-            if (iEvent.code <= KEY_MAX && key_names[iEvent.code]) 
+            if (iEvent.code <= KEY_MAX && key_names[iEvent.code] != NULL) 
             {
                 print_timestamp();
                 if (shiftHeld && capsOn) printf("Key >>> (Shift + Caps + %s)\n", key_names[iEvent.code]);
