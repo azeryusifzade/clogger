@@ -33,14 +33,5 @@ Logger is active >>>
 [14:32:09] Key >>> (Caps + C)
 ```
 
-## Features
-
-- Maps key codes to readable names (letters, digits, numpad, punctuation, navigation keys, function keys, mouse buttons)
-- Detects Shift and Caps Lock state
-- Timestamps each logged key (second precision)
-
-## Known limitations
-
-- Requires manually specifying the device path
-- No output-to-file option yet
-- Only handles `EV_KEY` events (no mouse movement/scroll logging)
+## Note
+Requires manually specifying the device path
