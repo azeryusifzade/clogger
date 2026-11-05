@@ -2,13 +2,22 @@
 
 A small C program for learning how Linux exposes keyboard input through `/dev/input/eventX`. It reads raw `input_event` records from a device file and prints the key that was pressed, along with Shift/Caps state and a timestamp.
 
+Available in both C (`main.c`) and C++ (`main.cpp`) They are functionally identical, choose which you prefer to build.
+
 **For educational purposes only.** Only run this on devices you own or have explicit permission to monitor.
 
 ## Build
 
+**C version:**
 ```bash
 gcc -Wall -Wextra -g main.c -o logger
 ```
+ 
+**C++ version:**
+```bash
+g++ -std=c++17 -Wall -Wextra -g main.cpp -o logger
+```
+
 
 ## Usage
 
