@@ -6,6 +6,13 @@ Available in both C (`main.c`) and C++ (`main.cpp`) They are functionally identi
 
 **For educational purposes only.** Only run this on devices you own or have explicit permission to monitor.
 
+## Requirements
+
+- Linux kernel with evdev support
+- GCC 4.9 or newer
+- C11-compatible compiler
+- Access to input devices
+
 ## Build
 
 **C version:**
