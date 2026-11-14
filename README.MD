@@ -21,7 +21,7 @@ gcc -Wall -Wextra -g main.c -o logger
 ## Usage
 
 ```bash
-sudo ./logger /dev/input/eventX
+sudo ./logger /dev/input/eventX output.txt
 ```
 
 Replace `eventX` with your keyboard's device number. You can find it by checking:
@@ -30,7 +30,9 @@ Replace `eventX` with your keyboard's device number. You can find it by checking
 cat /proc/bus/input/devices
 ```
 
-Press Ctrl+C to stop the logger.
+Replace `output.txt` with the name of txt file you want to create.
+
+Press `Ctrl+C` to stop the logger.
 
 ## Example output
 
@@ -42,4 +44,5 @@ Logger is active >>>
 ```
 
 ## Note
-Requires manually specifying the device path
+1.Requires manually specifying the device path
+2.For educational purposes only.
