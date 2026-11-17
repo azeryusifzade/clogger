@@ -44,5 +44,5 @@ Logger is active >>>
 ```
 
 ## Note
-1.Requires manually specifying the device path
-2.For educational purposes only.
+- 1.Requires manually specifying the device path
+- 2.For educational purposes only.
